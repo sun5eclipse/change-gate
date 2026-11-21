@@ -1,0 +1,26 @@
+{
+  "name": "change-gate",
+  "version": "1.0.0",
+  "description": "change-gate with AI",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sun5eclipse/change-gate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sun5eclipse/change-gate/issues"
+  },
+  "homepage": "https://github.com/sun5eclipse/change-gate#readme",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0"
+  }
+}
