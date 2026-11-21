@@ -24,6 +24,14 @@ app.use('/changes', changesRouter);
 const approvalsRouter = require('./routes/approvals');
 app.use('/approvals', approvalsRouter);
 
+// [추가] 감사 로그 라우터
+const auditRouter = require('./routes/audit');
+app.use('/audit', auditRouter);
+
+// [추가] AI 에이전트 라우터
+const agentRouter = require('./routes/agent');
+app.use('/agent', agentRouter);
+
 //라우트 정의
 app.get('/health', (req, res) => {
   // JSON 문자열로 변환해서 응답

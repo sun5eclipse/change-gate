@@ -1,6 +1,7 @@
 const db = require('./db');
 const { STATES, canTransition } = require('./state');
 const { httpError, getChangeOrThrow } = require('./changeService');
+const { appendEvent } = require('./audit');
 
 async function executeChange(changeId, options = {}) {
     // 1) 조회는 공통 헬퍼로
@@ -25,6 +26,14 @@ async function executeChange(changeId, options = {}) {
     changes[changeIndex] = change;
     await db.writeDB('changes.json', changes);
 
+    await appendEvent({
+        type: 'EXECUTION_STARTED',
+        changeId,
+        serverId: change.server_id,
+        beforeState: change.before_state,
+        actor: 'system'
+    });
+
     try {
         // 5) 시뮬레이션: 서버를 restarting 상태로
         server.status = 'restarting';
@@ -48,6 +57,14 @@ async function executeChange(changeId, options = {}) {
         change.status = STATES.COMPLETED;
         changes[changeIndex] = change;
         await db.writeDB('changes.json', changes);
+        
+        await appendEvent({
+            type: 'EXECUTION_COMPLETED',
+            changeId,
+            serverId: change.server_id,
+            afterState: change.after_state,
+            actor: 'system'
+        });
 
         return change;
     }
@@ -64,6 +81,14 @@ async function executeChange(changeId, options = {}) {
         change.status = STATES.ROLLED_BACK;
         changes[changeIndex] = change;
         await db.writeDB('changes.json', changes);
+
+        await appendEvent({
+            type: 'EXECUTION_COMPLETED',
+            changeId,
+            serverId: change.server_id,
+            afterState: change.after_state,
+            actor: 'system'
+        });
 
         throw httpError(`실행 실패 후 롤백되었습니다: ${err.message}`, 500);
     }
